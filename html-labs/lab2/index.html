@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lab2</title>
+    <style>
+        .image-container {
+            text-align: center;
+        }
+
+        .image-container img {
+            margin: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <table>
+            <tr>
+                <td class="image-container">
+                    <img src="/images/1.jpg" alt="Первое изображение" title="Первое изображение" width="200" height="200">
+                </td>
+                <td class="image-container">
+                    <img src="/images/2.jpg" alt="Второе изображение" title="Второе изображение" width="200" height="200">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="image-container">
+                    <img src="/images/3.jpg" alt="Третье изображение" title="Третье изображение" width="300" height="300">
+                </td>
+            </tr>
+        </table>
+    </center>
+
+    <hr>
+
+    <center>
+        <table border="0" cellspacing="2" bgcolor="#000000" height="200">
+        <tbody bgcolor="#FFFFFF">
+            <tr height="25">
+                <td colspan="5"><center><b>Date despre copiii colaboratorilor</b></center></td>
+            </tr>
+            <tr height="50" align="center">
+                <td>
+                    <b>Nume,
+                    prenume</b>
+                </td>
+    
+                <td>
+                    <b>Adresa fizică</b>
+                </td>
+    
+                <td width="60">
+                    <b>Număr
+                    copii
+                    minori</b>
+                </td>
+    
+                <td>
+                    <b>Prenume
+                    copil şi anul
+                    de naștere</b>
+                </td>
+    
+                <td>
+                    <b>Poza copil</b>
+                </td>
+            </tr>
+            <tr align="center" valign="top">
+                <td rowspan="2">Ivanov Elena</td>
+                <td rowspan="2">Str. Codrilor 45, ap.56</td>
+                <td rowspan="2">2</td>
+                <td>Elena, 2006</td>
+                <td><a href="/html/t1.html" target="_blank"><img src="/images/t1.jpg" alt="" width="150" height="100"></a></td>
+            </tr>
+            <tr align="center" valign="top">
+                <td>Valeriu,
+                    2011</td>
+                <td><a href="/html/t2.html" target="_blank"><img src="/images/t2.jpg" alt="" width="150" height="100"></a></td>
+            </tr>
+            <tr align="center" valign="top">
+                <td rowspan="3">Mihailov Marta </td>
+                <td rowspan="3">Str. Puskin 10, ap.45</td>
+                <td rowspan="3">3</td>
+                <td>Ion, 2008</td>
+                <td><a href="/html/t3.html" target="_blank"><img src="/images/t3.jpg" alt="" width="150" height="100"></a></td>
+            </tr>
+            <tr align="center" valign="top">
+                <td>Ecaterina,
+                    2010</td>
+                <td><a href="/html/t4.html" target="_blank"><img src="/images/t4.jpg" alt="" width="150" height="100"></a></td>
+            </tr>
+            <tr align="center" valign="top">
+                <td>Valentin,
+                    2011</td>
+                <td><a href="/html/t5.html" target="_blank"><img src="/images/t5.jpg" alt="" width="150" height="100"></a></td>
+            </tr>
+            <tr align="center" valign="top">
+                <td>Cliucnicov
+                    Magdalena</td>
+                <td>Str. Nucilor 34, ap. 22 </td>
+                <td>1</td>
+                <td>Mariuta,
+                    2012</td>   
+                <td><a href="/html/t6.html" target="_blank"><img src="/images/t6.jpg" alt="" width="150" height="100"></a></td>
+            </tr>
+            <tr height="25" valign="top"> 
+                <td colspan="2"><b>Total număr copii </b></td>
+                <td colspan="3">6</td>
+            </tr>
+        </tbody>
+    </table>
+    </center>
+
+    <hr>
+
+    <h1>Карта зоопарка</h1>
+    <img src="/images/zooMap.jpg" alt="Карта зоопарка" usemap="#zooMap" width="1024" height="724">
+    
+    <map name="zooMap">
+
+        <area shape="rect" coords="0,0,256,362" href="/html/area1.html" alt="Зона 1">
+        
+        <area shape="circle" coords="512,362,50" href="/html/area2.html" alt="Зона 2">
+        
+        <area shape="poly" coords="256,724,384,482,640,724" href="/html/area3.html" alt="Зона 3">
+    </map>
+
+    <hr>
+
+    <style>
+        .custom-table {
+            border-collapse: collapse;
+            width: 100%;
+            height: 100%;
+       
+        }
+        .container {
+            border: 1px solid black;
+            padding: 20px;
+        }
+    
+        .inner-container {
+            border: 1px solid black;
+            padding: 10px;
+            margin: 10px;
+        }
+    
+        input[type="text"],
+        textarea {
+            width: 100%;
+            height: 100%;
+        }
+    
+        .submit-button {
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .cancel-button {
+            display: inline-block;
+            margin-top: 10px;
+        }
+    </style>
+
+    <div class="container">
+        <table class="custom-table">
+            <tr>
+                <td>
+                    <div class="inner-container">
+                        <form>
+                            <h3>Date personale</h3>
+                            <label for="Nume">Nume*:</label><br>
+                            <input type="text" id="Nume" name="Nume" required pattern="[A-Za-z]+"><br><br>
+                            <label for="Prenume">Prenume*:</label><br>
+                            <input type="text" id="Prenume" name="Prenume" required pattern="[A-Za-z]+"><br><br>
+                            <label for="Email">Email:</label><br>
+                            <input type="text" id="Email" name="Email"><br><br>
+
+                            <label for="Datanasterii">Data nasterii*:</label>
+                            <input type="date" id="Datanasterii" name="Datanasterii"><br><br>
+
+                            <label for="Sexul">Sexul:</label>
+                            <input type="checkbox" id="Sexul" name="Sexul" value="F">F
+                            <input type="checkbox" id="Sexul" name="Sexul" value="M">M<br><br>
+
+                            <label for="Telefonul">Telefonul:</label><br>
+                            <input type="text" id="Telefonul" name="Telefonul"><br><br>
+
+                            <label for="Raionul">Raionul:</label>
+                            <select id="Raionul" name="Raionul">
+                                <option value="Edineț">Edineț</option>
+                                <option value="Cahul">Cahul</option>
+                                <option value="Călărași">Călărași</option>
+                                <option value="Cahul">Cantemir</option>
+                            </select><br><br>
+
+                            <label for="Studii">Studii:</label><br>
+                            <input type="checkbox" id="Studii" name="Studii" value="Colegiu">Colegiu<br>
+                            <input type="checkbox" id="Studii" name="Studii" value="Licenta">Licenta<br>
+                            <input type="checkbox" id="Studii" name="Studii" value="Masterat">Masterat<br><br>
+
+                            <label for="Textarea">Suplimentar:</label><br>
+                            <textarea id="Textarea" name="Textarea" rows="5" required maxlength="1000" placeholder="Scrie aici"></textarea><br><br>
+                        </form>
+                    </div>
+                </td>
+                <td>
+                    <div class="inner-container">
+                        <form>
+                            <h3>Date despre produsul ales</h3>
+                            <label for="DenumireaProdus">Denumirea Produs*:</label><br>
+                            <input type="text" id="DenumireaProdus" name="DenumireaProdus" required pattern="[A-Za-z]+"><br><br>
+                            <label for="Producatorul">Producatorul*:</label><br>
+                            <input type="text" id="Producatorul" name="Producatorul" required pattern="[A-Za-z]+"><br><br>
+                            <label for="Cantitateadeproduse">Cantitatea de produse*:</label><br>
+                            <input type="text" id="Cantitateadeproduse" name="Cantitateadeproduse" required pattern="[A-Za-z]+"><br><br>
+                            <label for="Culoarea">Culoarea*:</label>
+                            <input type="color" id="Culoarea" name="Culoarea"><br><br>  
+                            <label for="Marimea">Marimea*:</label><br>
+                            <input type="text" id="Marimea" name="Marimea" required pattern="[A-Za-z]+"><br><br>
+                            
+                            
+                        </form>
+                    </div>
+                    <div class="inner-container">
+                        <h3>Date bancare</h3>
+                        <form>
+                            <label for="Tipulcardului">Tipul cardului:</label>
+                            <input type="checkbox" id="Tipulcardului" name="Tipulcardului" value="Viza"><b>Viza</b>
+                            <input type="checkbox" id="Tipulcardului" name="Tipulcardului" value="MasterCard"><b>MasterCard</b><br><br>
+
+                            <label for="Numarulcardului">Numarul cardului*:</label><br>
+                            <input type="text" id="Numarulcardului" name="Numarulcardului" required pattern="[A-Za-z]+"><br><br>
+
+                            <label for="Expira">Expira*:</label>
+                            <input type="date" id="Expira" name="Expira"><br><br>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <input type="submit" value="Отправить" class="submit-button">
+        <input type="button" value="Отменить" class="cancel-button">
+    </div>
+
+    <hr>
+
+    <center>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5282.489509288962!2d28.82270562817898!3d47.01821956290918!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40c97c2d03e2c6b1%3A0xd8e8b74ac8c3ef7b!2z0JzQvtC70LTQsNCy0YHQutC40Lkg0JPQvtGB0YPQtNCw0YDRgdGC0LLQtdC90L3Ri9C5INCj0L3QuNCy0LXRgNGB0LjRgtC10YI!5e0!3m2!1sru!2s!4v1695646206605!5m2!1sru!2s" width="1000" height="600" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </center>
+
+    <hr>
+
+    <audio controls>
+        <source src="/audio/audioprog.mp3" type="audio/mpeg">
+        <source src="/audio/audioprog.ogg" type="audio/ogg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <video controls>
+        <source src="/video/cplusplus.mp4" type="video/mp4">
+        <source src="/video/cplusplus.webm" type="video/webm">
+        Your browser does not support the video element.
+    </video>
+      
+
+</body>
+</html>

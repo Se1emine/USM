@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Laborator nr.1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="first html lab" />
+    <meta name="keywords" content="" />
+    <meta name="author" content="Maksimov Danil" />
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/ico" />
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="#chapter1">Глава 1</a></li>
+        <li><a href="#chapter2">Глава 2</a></li>
+        <li><a href="#chapter3">Глава 3</a></li>
+      </ul>
+    </nav>
+
+    <h1 id="chapter1">Глава 1</h1>
+
+    <h2>1.1</h2>
+    <p>Это первый абзац подглавы 1.1.</p>
+    <p>Это второй абзац подглавы 1.1.</p>
+    <p>Это третий абзац подглавы 1.1.</p>
+
+    <h2>1.2</h2>
+    <p>Это первый абзац подглавы 1.2.</p>
+    <p>Это второй абзац подглавы 1.2.</p>
+    <p>Это третий абзац подглавы 1.2.</p>
+
+    <hr />
+    <!-- Упорядоченные списки -->
+    <h3>Упорядоченные списки</h3>
+    <ol>
+      <!-- Упорядоченный список с цифрами -->
+      <li>Элемент 1</li>
+      <li>Элемент 2</li>
+      <li>Элемент 3</li>
+      <li>Элемент 4</li>
+    </ol>
+
+    <ol type="a">
+      <!-- Упорядоченный список со строчными буквами латинского алфавита -->
+      <li>Элемент a</li>
+      <li>Элемент b</li>
+      <li>Элемент c</li>
+      <li>Элемент d</li>
+    </ol>
+
+    <ol type="I" start="3">
+      <!-- Упорядоченный список с римскими цифрами и начало с "III" -->
+      <li>Элемент III</li>
+      <li>Элемент IV</li>
+      <li>Элемент V</li>
+      <li>Элемент VI</li>
+    </ol>
+
+    <ol type="1" reversed>
+      <!-- Упорядоченный список с цифрами, в обратном порядке -->
+      <li>Элемент 4</li>
+      <li>Элемент 3</li>
+      <li>Элемент 2</li>
+      <li>Элемент 1</li>
+    </ol>
+
+    <!-- Неупорядоченные списки -->
+    <h3>Неупорядоченные списки</h3>
+    <!-- Первый список с маркером точка -->
+    <ul>
+      <li>Элемент 1</li>
+      <li>Элемент 2</li>
+      <li>Элемент 3</li>
+      <li>Элемент 4</li>
+    </ul>
+
+    <!-- Второй список с маркером ▪ -->
+    <ul style="list-style-type: disc">
+      <li>Элемент 1</li>
+      <li>Элемент 2</li>
+      <li>Элемент 3</li>
+      <li>Элемент 4</li>
+    </ul>
+
+    <!-- Третий список с маркером ◦ -->
+    <ul style="list-style-type: circle">
+      <li>Элемент 1</li>
+      <li>Элемент 2</li>
+      <li>Элемент 3</li>
+      <li>Элемент 4</li>
+    </ul>
+
+    <!-- Смешанный список (упорядоченный список, содержащий неупорядоченные списки) -->
+    <h3>Смешанный список</h3>
+    <ol>
+      <li>
+        Упорядоченный элемент 1
+        <ul>
+          <li>Неупорядоченный элемент 1</li>
+          <li>Неупорядоченный элемент 2</li>
+        </ul>
+      </li>
+      <li>Упорядоченный элемент 2</li>
+      <li>
+        Упорядоченный элемент 3
+        <ul>
+          <li>Неупорядоченный элемент 3</li>
+        </ul>
+      </li>
+      <li>Упорядоченный элемент 4</li>
+    </ol>
+
+    <!-- Список описания -->
+    <h3>Список описания</h3>
+    <dl>
+      <!-- Элемент 1 -->
+      <dt>Термин 1</dt>
+      <dd>Описание термина 1.</dd>
+
+      <!-- Элемент 2 -->
+      <dt>Термин 2</dt>
+      <dd>Описание термина 2.</dd>
+
+      <!-- Элемент 3 -->
+      <dt>Термин 3</dt>
+      <dd>Описание термина 3.</dd>
+    </dl>
+    <p><a href="#">Наверх</a></p>
+    <hr />
+
+    <h1 id="chapter2">Глава 2</h1>
+
+    <table border="0" cellspacing="2" bgcolor="#000000" height="200">
+      <style>
+        caption {
+          margin-bottom: 10px;
+        }
+      </style>
+      <caption>
+        <b>Repartizarea orelor pentru acest semestru</b>
+      </caption>
+      <tr bgcolor="#FFFFFF">
+        <th rowspan="3" width="80">Semestru</th>
+        <th colspan="4" width="300">Total ore</th>
+        <th rowspan="3" width="100">Evaluarea</th>
+        <th rowspan="3" width="60">Nr. de credite</th>
+      </tr>
+      <tr bgcolor="#FFFFFF">
+        <td rowspan="2" align="center">Total<br />ore<br />semestru</td>
+        <td colspan="3" align="center">Inclusiv</td>
+      </tr>
+      <tr bgcolor="#FFFFFF">
+        <td align="center">Curs</td>
+        <td align="center">Laborator</td>
+        <td align="center">LI</td>
+      </tr>
+      <tr bgcolor="#FFFFFF">
+        <td align="center">I</td>
+        <td align="center">150</td>
+        <td align="center">30</td>
+        <td align="center">45</td>
+        <td align="center">75</td>
+        <td align="center">Examen</td>
+        <td align="center">5</td>
+      </tr>
+      <tr bgcolor="#FFFFFF">
+        <td align="center">II</td>
+        <td align="center">90</td>
+        <td align="center">30</td>
+        <td align="center">30</td>
+        <td align="center">30</td>
+        <td align="center">Examen</td>
+        <td align="center">4</td>
+      </tr>
+      <tr bgcolor="#FFFFFF">
+        <td align="center">Total ore</td>
+        <td align="center" colspan="4">240</td>
+        <td align="center">Total credite</td>
+        <td align="center">9</td>
+      </tr>
+    </table>
+
+    <h2>2.1</h2>
+    <p>Это первый абзац подглавы 2.1.</p>
+    <p>Это второй абзац подглавы 2.1.</p>
+    <p>Это третий абзац подглавы 2.1.</p>
+
+    <!--задача 1 пункт e-->
+    <hr />
+    <blockquote>
+      <p><b>Это</b> <i>цитата</i></p>
+      <footer>
+        <cite>Danil</cite>
+      </footer>
+    </blockquote>
+
+    <p>
+      Один стих с использованием тега br:<br />
+      Розы - красные,<br />
+      Фиалки - синие,<br />
+      HTML - классный
+    </p>
+
+    <p>Один стих с использованием тега pre:</p>
+    <pre>
+        Это        текст
+        с        сохраненными
+        пробелами          и
+        переносами          строк.
+    </pre>
+    <q>Это цитата(q)</q>
+
+    <address>
+      <cite>Danil</cite>
+    </address>
+    <p>HTML означает <abbr title="HyperText Markup Language">HTML</abbr>.</p>
+    <p>Это пример 2<sup>3</sup> надстрочного текста.</p>
+    <p>Водяной состав: H<sub>2</sub>O.</p>
+    <p>Документ был <ins>обновлен 9 сентября 2023 года</ins>.</p>
+    <p>Слово "<del>старое</del> новое" заменило старое слово.</p>
+    <p>Важное сообщение: <mark>Срочно!</mark></p>
+    <p>Пример кода: <code>console.log("hi there");</code></p>
+    <!--прокоментировал-->
+    <hr />
+
+    <h2>2.2</h2>
+    <p>Это первый абзац подглавы 2.2.</p>
+    <p>Это второй абзац подглавы 2.2.</p>
+    <p>Это третий абзац подглавы 2.2.</p>
+
+    <p><a href="#">Наверх</a></p>
+
+    <h1 id="chapter3">Глава 3</h1>
+
+    <h2>3.1</h2>
+    <p>Это первый абзац подглавы 3.1.</p>
+    <p>Это второй абзац подглавы 3.1.</p>
+    <p>Это третий абзац подглавы 3.1.</p>
+
+    <h2>3.2</h2>
+    <p>Это первый абзац подглавы 3.2.</p>
+    <p>Это второй абзац подглавы 3.2.</p>
+    <p>Это третий абзац подглавы 3.2.</p>
+
+    <p><a href="#">Наверх</a></p>
+
+    <!-- Внешние ссылки -->
+    <div>
+      <h3>Внешние ссылки</h3>
+      <ul>
+        <li><a href="https://www.google.com" target="_blank">Google</a></li>
+        <li><a href="https://www.facebook.com" target="_blank">Facebook</a></li>
+        <li><a href="https://usm.md" target="_blank">USM</a></li>
+      </ul>
+    </div>
+  </body>
+</html>

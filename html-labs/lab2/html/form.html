@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Формы</title>
+    <style>
+        .container {
+            border: 1px solid black;
+            padding: 20px;
+        }
+    
+        .inner-container {
+            border: 1px solid black;
+            padding: 10px;
+            margin: 10px;
+        }
+    
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            height: 100%;
+        }
+    
+        input[type="text"],
+        textarea {
+            width: 100%;
+            height: 100%;
+        }
+    
+        .submit-button {
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .cancel-button {
+            display: inline-block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <table>
+            <tr>
+                <td>
+                    <div class="inner-container">
+                        <form>
+                            <h3>Date personale</h3>
+                            <label for="Nume">Nume*:</label><br>
+                            <input type="text" id="Nume" name="Nume" required pattern="[A-Za-z]+"><br><br>
+                            <label for="Prenume">Prenume*:</label><br>
+                            <input type="text" id="Prenume" name="Prenume" required pattern="[A-Za-z]+"><br><br>
+                            <label for="Email">Email:</label><br>
+                            <input type="text" id="Email" name="Email"><br><br>
+
+                            <label for="Datanasterii">Data nasterii*:</label>
+                            <input type="date" id="Datanasterii" name="Datanasterii"><br><br>
+
+                            <label for="Sexul">Sexul:</label>
+                            <input type="checkbox" id="Sexul" name="Sexul" value="F">F
+                            <input type="checkbox" id="Sexul" name="Sexul" value="M">M<br><br>
+
+                            <label for="Telefonul">Telefonul:</label><br>
+                            <input type="text" id="Telefonul" name="Telefonul"><br><br>
+
+                            <label for="Raionul">Raionul:</label>
+                            <select id="Raionul" name="Raionul">
+                                <option value="Edineț">Edineț</option>
+                                <option value="Cahul">Cahul</option>
+                                <option value="Călărași">Călărași</option>
+                                <option value="Cahul">Cantemir</option>
+                            </select><br><br>
+
+                            <label for="Studii">Studii:</label><br>
+                            <input type="checkbox" id="Studii" name="Studii" value="Colegiu">Colegiu<br>
+                            <input type="checkbox" id="Studii" name="Studii" value="Licenta">Licenta<br>
+                            <input type="checkbox" id="Studii" name="Studii" value="Masterat">Masterat<br><br>
+
+                            <label for="Textarea">Suplimentar:</label><br>
+                            <textarea id="Textarea" name="Textarea" rows="5" required maxlength="1000" placeholder="Scrie aici"></textarea><br><br>
+                        </form>
+                    </div>
+                </td>
+                <td>
+                    <div class="inner-container">
+                        <form>
+                            <h3>Date despre produsul ales</h3>
+                            <label for="DenumireaProdus">Denumirea Produs*:</label><br>
+                            <input type="text" id="DenumireaProdus" name="DenumireaProdus" required pattern="[A-Za-z]+"><br><br>
+                            <label for="Producatorul">Producatorul*:</label><br>
+                            <input type="text" id="Producatorul" name="Producatorul" required pattern="[A-Za-z]+"><br><br>
+                            <label for="Cantitateadeproduse">Cantitatea de produse*:</label><br>
+                            <input type="text" id="Cantitateadeproduse" name="Cantitateadeproduse" required pattern="[A-Za-z]+"><br><br>
+                            <label for="Culoarea">Culoarea*:</label>
+                            <input type="color" id="Culoarea" name="Culoarea"><br><br>  
+                            <label for="Marimea">Marimea*:</label><br>
+                            <input type="text" id="Marimea" name="Marimea" required pattern="[A-Za-z]+"><br><br>
+                            
+                            
+                        </form>
+                    </div>
+                    <div class="inner-container">
+                        <h3>Date bancare</h3>
+                        <form>
+                            <label for="Tipulcardului">Tipul cardului:</label>
+                            <input type="checkbox" id="Tipulcardului" name="Tipulcardului" value="Viza"><b>Viza</b>
+                            <input type="checkbox" id="Tipulcardului" name="Tipulcardului" value="MasterCard"><b>MasterCard</b><br><br>
+
+                            <label for="Numarulcardului">Numarul cardului*:</label><br>
+                            <input type="text" id="Numarulcardului" name="Numarulcardului" required pattern="[A-Za-z]+"><br><br>
+
+                            <label for="Expira">Expira*:</label>
+                            <input type="date" id="Expira" name="Expira"><br><br>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <input type="submit" value="Отправить" class="submit-button">
+        <input type="button" value="Отменить" class="cancel-button">
+    </div>
+</body>
+</html>

@@ -1,0 +1,102 @@
+/* Задача 1: Адаптивный дизайн */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.box {
+    width: 48%; 
+    margin-bottom: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Примеры стилей для разных устройств */
+@media (max-width: 768px) {
+    .box {
+        width: 100%;
+    }
+}
+
+/* Задача 2: Градиенты */
+.gradient-example {
+    background: linear-gradient(to right, #ffcc00, #ff6666);
+}
+
+.repeating-gradient-example {
+    background: repeating-linear-gradient(45deg, #6699ff, #6699ff 10px, #99ccff 10px, #99ccff 20px);
+}
+
+.radial-gradient-example {
+    background: radial-gradient(circle, #ff99cc, #ff3399);
+}
+
+.repeating-radial-gradient-example {
+    background: repeating-radial-gradient(circle, #ffcc66, #ffcc66 10px, #ff9966 10px, #ff9966 20px);
+}
+
+.conic-gradient-example {
+    background: conic-gradient(from 45deg, #66cc66, #ccff66);
+}
+
+.repeating-conic-gradient-example {
+    background: repeating-conic-gradient(from 45deg, #ffcc00, #ffcc00 10deg, #ff9900 10deg, #ff9900 20deg);
+}
+
+/* Задача 3: Трансформации */
+.transform-example {
+    transform: rotate(45deg) scale(1.2) skew(10deg, 20deg) translate(20px, 30px);
+}
+
+/* Задача 4: Переходы */
+.transition-example {
+    transition: all 0.3s ease-in-out;
+}
+
+.transition-example:hover {
+    transform: scale(1.2);
+    background-color: #ffcc00;
+}
+
+/* Задача 5: Анимации */
+@keyframes animation1 {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.5);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes animation2 {
+    0% {
+        background-color: #6699ff;
+    }
+    50% {
+        background-color: #ff6666;
+    }
+    100% {
+        background-color: #6699ff;
+    }
+}
+
+.animation-element1 {
+    animation: animation1 3s infinite;
+}
+
+.animation-element2 {
+    animation: animation2 2s infinite;
+}

@@ -1,0 +1,152 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab4</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+    <div class="block-container">
+        <h1>Ex-1</h1>
+        <div class="block block1"></div>
+        <div class="block block2"></div>
+        <div class="block block3"></div>
+        <div class="block block4"></div>
+        <div class="block block5"></div>
+    </div>
+
+    <h1>Ex-2</h1>
+    <div class="container">
+      <div class="item item_1">
+          <div class="input-group">
+
+            <p><b>Date personale</b></p>
+
+              <span>*Numele:</span>
+              <input type="text" pattern="^[A-Z][a-zA-Z]*$" required />
+      
+              <span>*Prenumele:</span>
+              <input type="text" pattern="^[A-Z][a-zA-Z]*$" required />
+      
+              <span>E-mail:</span>
+              <input type="email" />
+      
+              <span>*Data nasterii:</span>
+              <input type="date" required />
+      
+              <span>Sexul:</span>
+              <div>
+                <input type="radio" name="sexul" />
+                <label>F</label>
+      
+                <input type="radio" name="sexul" />
+                <label>M</label>
+              </div>
+      
+              <span>Telefonul:</span>
+              <input type="tel" />
+      
+              <span>Raionul:</span>
+              <select>
+                  <option value="Bălți">Bălți</option>
+                  <option value="Briceni">Briceni</option>
+                  <option value="Căușeni">Căușeni</option>
+                  <option value="Chișinău">Chișinău</option>
+                  <option value="Comrat">Comrat</option>
+                  <option value="Anenii Noi">Anenii Noi</option>
+                </select>
+      
+                <span>Studii:</span>
+                <div>
+                  <input type="checkbox" />
+                  <label for="scales">Colegiu</label>
+                  <br />
+                  <input type="checkbox" />
+                  <label for="horns">Licență</label>
+                  <br />
+                  <input type="checkbox" />
+                  <label for="horns">Masterat</label>
+                </div>
+      
+                <span>Suplimentar:</span>
+                <textarea placeholder="Scrie aici" maxlength="1000" rows="4"></textarea>
+          </div>           
+      </div>
+  
+      <div class="item item_2">
+          <div class="input-group">
+
+            <p><b>Date despre produsul ales</b></p>
+
+              <span>*Denumirea produs:</span>
+              <input type="text" pattern="[A-Za-z]+" required />
+      
+              <span>*Producătorul:</span>
+              <input type="text" pattern="[A-Za-z]+" required />
+      
+              <span>*Cantitatea de produse:</span>
+              <input type="text" required />
+      
+              <span>*Culoarea:</span>
+              <input type="color" required />
+      
+               <span>*Mărimea:</span>
+               <input type="text" required />
+          </div>
+      </div>
+
+      <div class="item item_3">
+          <div class="input-group">
+
+            <p><b>Date bancare</b><p/>
+
+              <span>*Tipul cardului:</span>
+              <div>
+                  <input type="radio" name="card" />
+                  <label>Viza</label>
+  
+                  <input type="radio" name="card" />
+                  <label>MasterCard</label>
+              </div>
+  
+              <span>*Numărul cardului:</span>
+              <input type="text" pattern="\d+" required />
+  
+              <span>*Expiră:</span>
+              <input type="date" required />
+          </div>        
+      </div>
+
+      <div class="item item_4">
+
+          <div>
+              <button>Anuleaza</button>
+              <button>Trimite</button>
+            </div>
+            <span>*Câmpul trebuie să fie completat</span>
+          </div>
+      </div>
+    </div>
+    
+    <h1>Ex-3</h1>
+
+    <ul>
+      <li class="selected">Пункт 1</li>
+      <li>Пункт 2</li>
+      <li>Пункт 3</li>
+    </ul>
+  
+    <ul>
+      <li>Пункт A</li>
+      <li>Пункт B</li>
+      <li>Пункт C</li>
+    </ul>
+
+    <h1>Ex-4</h1>
+
+    <p>Перейдите по <a href="https://lichess.org" target="_blank">ссылке</a></p>
+
+
+</body>
+</html>
