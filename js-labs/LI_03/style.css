@@ -1,0 +1,97 @@
+/* Стили для формы */
+#add-transaction-form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#add-transaction-form label {
+  margin-bottom: 5px;
+  display: block;
+}
+
+#add-transaction-form input,
+#add-transaction-form select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+#add-transaction-form button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+#add-transaction-form button:hover {
+  background-color: #0056b3;
+}
+
+/* Стили для индикатора загрузки */
+#loading {
+  display: none; /* Скрыть индикатор загрузки по умолчанию */
+  width: 20px;
+  height: 20px;
+  border: 5px solid #ccc;
+  border-radius: 50%;
+  border-top: 2px solid #007bff;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Стили для сообщения об ошибке */
+#error-message {
+  color: red;
+  font-weight: bold;
+}
+
+/* Стили для таблицы */
+#transactions-table {
+  width: 100%;
+  margin: 20px auto;
+  border-collapse: collapse;
+}
+
+#transactions-table th {
+  background-color: #f2f2f2;
+  padding: 10px;
+  text-align: left;
+}
+
+#transactions-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+#transactions-table tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* Стили для цветных строк */
+.green-row {
+  background-color: #d9f9b3;
+}
+
+.red-row {
+  background-color: #f9d9b3;
+}
+
+/* Стили для отображения общей суммы */
+#total-amount {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 20px;
+}
