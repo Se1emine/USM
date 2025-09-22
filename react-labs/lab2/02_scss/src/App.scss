@@ -1,0 +1,28 @@
+@use './styles/variables' as *;
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: $space-2;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: $space-3;
+  will-change: filter;
+  transition: filter 300ms;
+
+  &.react:hover {
+    filter: drop-shadow(0 0 2em #61dafbaa);
+  }
+
+  &:hover {
+    filter: drop-shadow(0 0 2em #646cffaa);
+  }
+}
+
+.info-text {
+  color: $gray-500;
+  font-size: 0.9rem;
+}

@@ -1,0 +1,14 @@
+.header {
+  padding: 1rem 0;
+  text-align: left;
+}
+
+.title {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.subtitle {
+  margin: 0;
+  color: #666;
+}

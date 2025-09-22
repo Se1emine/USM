@@ -1,0 +1,18 @@
+@use '../styles/variables' as *;
+
+.card {
+  border: 1px solid $border;
+  border-radius: $radius;
+  padding: $space-2;
+  margin: $space-2 0;
+  text-align: left;
+
+  &__title {
+    margin-top: 0;
+    font-size: 1.25rem;
+  }
+
+  &__body {
+    display: block;
+  }
+}
