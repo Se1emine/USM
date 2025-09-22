@@ -1,0 +1,116 @@
+/* Основные стили для системы управления банковскими транзакциями */
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  background-color: #f5f5f5;
+  line-height: 1.6;
+}
+
+h1,
+h2 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #2c5aa0;
+  border-bottom: 3px solid #2c5aa0;
+  padding-bottom: 10px;
+}
+
+h2 {
+  color: #4a4a4a;
+  border-left: 4px solid #2c5aa0;
+  padding-left: 15px;
+}
+
+/* Стили для таблиц */
+table {
+  margin: 20px 0;
+  border-collapse: collapse;
+  width: 100%;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+th {
+  background-color: #2c5aa0;
+  color: white;
+  padding: 12px 8px;
+  text-align: left;
+  font-weight: bold;
+}
+
+td {
+  padding: 10px 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* Стили для специальных элементов */
+.total {
+  font-weight: bold;
+  color: #2c5aa0;
+  font-size: 1.1em;
+  background-color: #e8f4fd;
+  padding: 10px;
+  border-radius: 5px;
+  border-left: 5px solid #2c5aa0;
+}
+
+.section {
+  margin: 30px 0;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили для списков */
+ul {
+  background-color: #f9f9f9;
+  padding: 15px 20px;
+  border-radius: 5px;
+  border-left: 4px solid #2c5aa0;
+}
+
+li {
+  margin: 8px 0;
+  color: #555;
+}
+
+/* Стили для параграфов */
+p {
+  color: #666;
+  margin: 10px 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  body {
+    margin: 10px;
+  }
+
+  table {
+    font-size: 14px;
+  }
+
+  th,
+  td {
+    padding: 6px 4px;
+  }
+
+  .section {
+    padding: 15px;
+  }
+}
