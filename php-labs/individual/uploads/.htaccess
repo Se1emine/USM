@@ -1,0 +1,16 @@
+# Apache 2.4+ safe rules for uploads directory
+# Disable directory listing
+Options -Indexes
+
+# Deny all direct access to files in this folder
+Require all denied
+
+# Do not execute PHP files here (extra safety)
+<FilesMatch "\.php$">
+    Require all denied
+</FilesMatch>
+
+# Deny direct access to .flp files
+<FilesMatch "\.flp$">
+    Require all denied
+</FilesMatch>
