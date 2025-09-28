@@ -1,0 +1,130 @@
+### Football League Management API Examples
+
+### 1. Get all leagues
+GET http://localhost:8080/api/leagues
+Accept: application/json
+
+### 2. Get league by ID
+GET http://localhost:8080/api/leagues/1
+Accept: application/json
+
+### 3. Create new league
+POST http://localhost:8080/api/leagues
+Content-Type: application/json
+
+{
+  "name": "Bundesliga",
+  "country": "Germany",
+  "season": 2024
+}
+
+### 4. Update league
+PUT http://localhost:8080/api/leagues/1
+Content-Type: application/json
+
+{
+  "name": "Premier League Updated",
+  "country": "England",
+  "season": 2024
+}
+
+### 5. Get all teams
+GET http://localhost:8080/api/teams
+Accept: application/json
+
+### 6. Get teams by league
+GET http://localhost:8080/api/teams/league/1
+Accept: application/json
+
+### 7. Create new team
+POST http://localhost:8080/api/teams
+Content-Type: application/json
+
+{
+  "name": "Arsenal",
+  "city": "London",
+  "foundedYear": 1886,
+  "stadium": "Emirates Stadium",
+  "leagueId": 1
+}
+
+### 8. Get all players
+GET http://localhost:8080/api/players
+Accept: application/json
+
+### 9. Get players by team
+GET http://localhost:8080/api/players/team/1
+Accept: application/json
+
+### 10. Get top scorers
+GET http://localhost:8080/api/players/top-scorers?minGoals=10
+Accept: application/json
+
+### 11. Create new player
+POST http://localhost:8080/api/players
+Content-Type: application/json
+
+{
+  "name": "Bukayo Saka",
+  "age": 22,
+  "position": "Winger",
+  "jerseyNumber": 7,
+  "nationality": "English",
+  "teamId": 1,
+  "statistics": {
+    "goals": 12,
+    "assists": 8,
+    "yellowCards": 1,
+    "redCards": 0,
+    "matchesPlayed": 18
+  }
+}
+
+### 12. Update player statistics
+PUT http://localhost:8080/api/players/1
+Content-Type: application/json
+
+{
+  "name": "Erling Haaland",
+  "age": 24,
+  "position": "Striker",
+  "jerseyNumber": 9,
+  "nationality": "Norwegian",
+  "teamId": 1,
+  "statistics": {
+    "goals": 30,
+    "assists": 6,
+    "yellowCards": 2,
+    "redCards": 0,
+    "matchesPlayed": 25
+  }
+}
+
+### 13. Get players by position
+GET http://localhost:8080/api/players/position/Striker
+Accept: application/json
+
+### 14. Get players by nationality
+GET http://localhost:8080/api/players/nationality/Spanish
+Accept: application/json
+
+### 15. Get players by age range
+GET http://localhost:8080/api/players/age-range?minAge=20&maxAge=30
+Accept: application/json
+
+### 16. Delete player
+DELETE http://localhost:8080/api/players/1
+
+### 17. Delete team
+DELETE http://localhost:8080/api/teams/1
+
+### 18. Delete league
+DELETE http://localhost:8080/api/leagues/1
+
+### 19. Check if league exists
+GET http://localhost:8080/api/leagues/1/exists
+Accept: application/json
+
+### 20. Count teams in league
+GET http://localhost:8080/api/teams/league/1/count
+Accept: application/json

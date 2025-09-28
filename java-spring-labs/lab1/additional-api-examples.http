@@ -1,0 +1,195 @@
+### Additional API Examples for Coach and Match Controllers
+
+### COACH ENDPOINTS
+
+### 1. Get all coaches
+GET http://localhost:8080/api/coaches
+Accept: application/json
+
+### 2. Get coach by ID
+GET http://localhost:8080/api/coaches/1
+Accept: application/json
+
+### 3. Get coach by name
+GET http://localhost:8080/api/coaches/name/Pep Guardiola
+Accept: application/json
+
+### 4. Get coaches by nationality
+GET http://localhost:8080/api/coaches/nationality/Spanish
+Accept: application/json
+
+### 5. Get coaches by minimum experience
+GET http://localhost:8080/api/coaches/experience/10
+Accept: application/json
+
+### 6. Get coaches by age range
+GET http://localhost:8080/api/coaches/age-range?minAge=40&maxAge=60
+Accept: application/json
+
+### 7. Get available coaches (without teams)
+GET http://localhost:8080/api/coaches/available
+Accept: application/json
+
+### 8. Get coaches with teams
+GET http://localhost:8080/api/coaches/with-teams
+Accept: application/json
+
+### 9. Create new coach
+POST http://localhost:8080/api/coaches
+Content-Type: application/json
+
+{
+  "name": "Mikel Arteta",
+  "age": 41,
+  "nationality": "Spanish",
+  "experienceYears": 4
+}
+
+### 10. Update coach
+PUT http://localhost:8080/api/coaches/1
+Content-Type: application/json
+
+{
+  "name": "Pep Guardiola",
+  "age": 53,
+  "nationality": "Spanish",
+  "experienceYears": 16
+}
+
+### 11. Delete coach
+DELETE http://localhost:8080/api/coaches/5
+
+### 12. Check if coach exists
+GET http://localhost:8080/api/coaches/1/exists
+Accept: application/json
+
+### MATCH ENDPOINTS
+
+### 13. Get all matches
+GET http://localhost:8080/api/matches
+Accept: application/json
+
+### 14. Get match by ID
+GET http://localhost:8080/api/matches/1
+Accept: application/json
+
+### 15. Get matches by league
+GET http://localhost:8080/api/matches/league/1
+Accept: application/json
+
+### 16. Get matches by status
+GET http://localhost:8080/api/matches/status/FINISHED
+Accept: application/json
+
+### 17. Get matches by round
+GET http://localhost:8080/api/matches/round/1
+Accept: application/json
+
+### 18. Get matches by team
+GET http://localhost:8080/api/matches/team/1
+Accept: application/json
+
+### 19. Get home matches by team
+GET http://localhost:8080/api/matches/team/1/home
+Accept: application/json
+
+### 20. Get away matches by team
+GET http://localhost:8080/api/matches/team/1/away
+Accept: application/json
+
+### 21. Get matches by date range
+GET http://localhost:8080/api/matches/date-range?startDate=2024-01-01T00:00:00&endDate=2024-12-31T23:59:59
+Accept: application/json
+
+### 22. Get matches by league and round
+GET http://localhost:8080/api/matches/league/1/round/1
+Accept: application/json
+
+### 23. Get matches between two teams
+GET http://localhost:8080/api/matches/between-teams?team1Id=1&team2Id=2
+Accept: application/json
+
+### 24. Create new match
+POST http://localhost:8080/api/matches
+Content-Type: application/json
+
+{
+  "matchDate": "2024-12-15T15:00:00",
+  "homeTeamId": 1,
+  "awayTeamId": 2,
+  "leagueId": 1,
+  "round": 2,
+  "status": "SCHEDULED"
+}
+
+### 25. Update match (finish match with score)
+PUT http://localhost:8080/api/matches/1
+Content-Type: application/json
+
+{
+  "matchDate": "2024-12-01T15:00:00",
+  "homeTeamId": 1,
+  "awayTeamId": 2,
+  "leagueId": 1,
+  "round": 1,
+  "status": "FINISHED",
+  "homeTeamScore": 3,
+  "awayTeamScore": 1
+}
+
+### 26. Create friendly match (without league)
+POST http://localhost:8080/api/matches
+Content-Type: application/json
+
+{
+  "matchDate": "2024-12-20T18:00:00",
+  "homeTeamId": 1,
+  "awayTeamId": 3,
+  "round": 1,
+  "status": "SCHEDULED"
+}
+
+### 27. Delete match
+DELETE http://localhost:8080/api/matches/3
+
+### 28. Check if match exists
+GET http://localhost:8080/api/matches/1/exists
+Accept: application/json
+
+### COMPLEX SCENARIOS
+
+### 29. Create coach and assign to team
+POST http://localhost:8080/api/coaches
+Content-Type: application/json
+
+{
+  "name": "Antonio Conte",
+  "age": 54,
+  "nationality": "Italian",
+  "experienceYears": 12
+}
+
+### 30. Update team with new coach
+PUT http://localhost:8080/api/teams/5
+Content-Type: application/json
+
+{
+  "name": "Arsenal",
+  "city": "London",
+  "foundedYear": 1886,
+  "stadium": "Emirates Stadium",
+  "leagueId": 1,
+  "coachId": 5
+}
+
+### 31. Create match between teams from different leagues
+POST http://localhost:8080/api/matches
+Content-Type: application/json
+
+{
+  "matchDate": "2024-12-25T20:00:00",
+  "homeTeamId": 1,
+  "awayTeamId": 3,
+  "round": 1,
+  "status": "SCHEDULED"
+}
