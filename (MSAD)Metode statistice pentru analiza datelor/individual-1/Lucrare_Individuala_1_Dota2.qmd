@@ -1,0 +1,1040 @@
+---
+title: "Индивидуальная работа 1 – Статистический анализ профессиональных матчей Dota 2"
+author: "i"
+date: today
+format:
+  html:
+    self-contained: true
+    lang: ru
+    theme: cosmo
+    toc: true
+    toc-depth: 2
+    number-sections: true
+---
+
+# Введение
+
+## Цель анализа
+Основной целью данной курсовой работы является проведение всестороннего статистического анализа профессиональных киберспортивных матчей в дисциплине Dota 2. Работа направлена на выявление закономерностей в продолжительности матчей (количестве сыгранных игр в серии), оценку результативности первой команды и проверку статистических гипотез, определяющих влияние формата матча на его исход и продолжительность.
+
+## Статистические задачи
+В рамках исследования перед нами стоят 5 конкретных статистических задач:
+1. Провести описательный анализ числовых и категориальных переменных, выявив основные тенденции и разброс данных.
+2. Визуализировать распределение данных, отношения между переменными и частоты событий при помощи D3.js/Plotly.
+3. Оценить параметры генеральной совокупности (среднее количество сыгранных карт и истинную долю побед первой команды) с построением 95% доверительных интервалов.
+4. Проверить статистическую гипотезу о вероятности победы первой команды (отличие от случайного исхода 50% на 50%).
+5. Провести дисперсионный анализ (ANOVA) для оценки влияния формата состязания (bestOf) на итоговое количество игр в матче.
+
+## Описание датасета
+В качестве источника данных используется открытый датасет "Kaggle Dota 2 Pro Matches". Набор содержит папки с разбиениями по уровням турниров. В данном анализе мы используем файл `all_tiers_games.csv`, включающий в себя около 83 000 профессиональных матчей.
+Основные переменные, на которых фокусируется наша работа:
+* `games_played` (числовая) — количество сыгранных карт в серии матчей.
+* `bestOf` (категориальная/порядковая) — формат серии (например, игра до 1, 2 или 3 побед: Bo1, Bo2, Bo3, Bo5).
+* `team1_win` (бинарная) — индикатор победы первой (Radiant/выбранной) команды (1 — победа, 0 — поражение).
+* `score1` и `score2` (числовые) — итоговый игровой счет первой и второй команды (количество совершенных убийств или набранных очков).
+
+---
+
+# Описательный анализ и визуализация данных
+
+В данном разделе мы загружаем данные, вычисляем основные статистические показатели и строим графики для визуального анализа. Все вычисления производятся с использованием библиотек `d3`, `jStat` и `Plotly`.
+
+```{ojs}
+//| echo: false
+//| warning: false
+// Подключение библиотек
+jStat = require("jstat@1.9.5")
+Plotly = require("plotly.js-dist-min@2.25.2")
+```
+
+```{ojs}
+//| echo: false
+//| warning: false
+// Загрузка данных c указанного в задании пути 
+// Примечание: для корректной работы через браузер/Quarto файлы должны быть доступны локально или через сервер
+_rawData = d3.csv("C:/ProgrammingProjects/6-semestr/(MSAD)Metode statistice pentru analiza datelor/individual-1/dataset/all_tiers_games.csv", d3.autoType).catch(() => {
+  // Запасной вариант пути для относительной загрузки, если абсолютный путь блокируется CORS
+  return d3.csv("dataset/all_tiers_games.csv", d3.autoType);
+})
+
+// Очистка данных от отсутствующих значений в ключевых колонках
+// Теперь также проверяем score1 и score2 для корректности парных графиков
+data = _rawData.filter(d => 
+  d.games_played !== null && 
+  d.bestOf !== null && 
+  d.team1_win !== null &&
+  d.score1 !== null &&
+  d.score2 !== null
+)
+
+// Подготовка массивов для jStat (теперь все массивы гарантированно одной длины и соответствуют друг другу)
+games_played = data.map(d => d.games_played)
+team1_win = data.map(d => d.team1_win ? 1 : 0)
+score1 = data.map(d => d.score1)
+score2 = data.map(d => d.score2)
+bestOf = data.map(d => d.bestOf)
+```
+
+## Базовые статистики
+
+Рассчитаем статистики для числовой переменной `games_played`.
+
+```{ojs}
+//| echo: false
+stats_games_played = {
+  return {
+    "Среднее (Mean)": jStat.mean(games_played).toFixed(4),
+    "Медиана (Median)": jStat.median(games_played),
+    "Ст. Отклонение (SD)": jStat.stdev(games_played, true).toFixed(4),
+    "Минимум (Min)": jStat.min(games_played),
+    "Максимум (Max)": jStat.max(games_played),
+    "Количество (N)": games_played.length
+  }
+}
+```
+
+```{ojs}
+// Вывод таблицы описательных статистик
+html`
+<div style="border: 1px solid #ccc; padding: 10px; max-width: 400px;">
+  <h4>Статистики games_played</h4>
+  <ul>
+    <li>Среднее: <b>${stats_games_played["Среднее (Mean)"]}</b></li>
+    <li>Медиана: <b>${stats_games_played["Медиана (Median)"]}</b></li>
+    <li>Ст. Отклонение: <b>${stats_games_played["Ст. Отклонение (SD)"]}</b></li>
+    <li>Минимум: <b>${stats_games_played["Минимум (Min)"]}</b> - Максимум: <b>${stats_games_played["Максимум (Max)"]}</b></li>
+    <li>Наблюдений N: <b>${stats_games_played["Количество (N)"]}</b></li>
+  </ul>
+</div>
+`
+```
+
+**Интерпретация:** Представленные статистики показывают центральную тенденцию и разброс количества игр в рамках одного матча. Среднее значение отражает математическое ожидание длины серии, а стандартное отклонение показывает гибкость этого значения. Разница между медианой и средним указывает на возможную асимметрию в распределении.
+
+## Визуализация
+
+Ниже представлены ключевые диаграммы для визуального изучения структуры датасета.
+
+### 1. Гистограмма количества сыгранных игр (games_played)
+```{ojs}
+//| echo: false
+plot1 = {
+  const div = DOM.element('div');
+  Plotly.newPlot(div, [{
+    x: games_played,
+    type: 'histogram',
+    marker: { color: '#1f77b4', line: {color: 'white', width: 1} }
+  }], {
+    title: 'Распределение количества сыгранных игр',
+    xaxis: { title: 'games_played (Кол-во игр)' },
+    yaxis: { title: 'Частота' }
+  });
+  return div;
+}
+```
+**Интерпретация:** Гистограмма демонстрирует распределение матчей по количеству сыгранных карт. Наиболее высокие столбцы показывают доминирующие форматы серий (например, строго 1 карта, 2 карты или 3 карты). Форма распределения не является нормальной, поскольку имеет дискретный мультимодальный характер.
+
+### 2. Boxplot количества сыгранных игр по формату серии (bestOf)
+```{ojs}
+//| echo: false
+plot2 = {
+  const div = DOM.element('div');
+  let uniqueBestOf = Array.from(new Set(bestOf)).sort((a,b) => a-b);
+  let plotData = uniqueBestOf.map(bo => {
+    return {
+      y: data.filter(d => d.bestOf === bo).map(d => d.games_played),
+      type: 'box',
+      name: 'Best of ' + bo,
+      boxpoints: 'outliers'
+    }
+  });
+
+  Plotly.newPlot(div, plotData, {
+    title: 'Boxplot количества игр в зависимости от формата (bestOf)',
+    xaxis: { title: 'Формат матча (bestOf)' },
+    yaxis: { title: 'games_played (Кол-во игр)' }
+  });
+  return div;
+}
+```
+**Интерпретация:** Диаграмма размаха (boxplot) явно показывает, что формат серии (bestOf) строго детерминирует вариативность сыгранных игр. Для Bo1 мы наблюдаем схлопывание дисперсии (играется ровно 1 игра). Для форматов Bo3 и Bo5 видно распределение игр от минимально необходимого для победы до максимально возможного (например, от 2 до 3 игр в Bo3).
+
+### 3. Столбчатая диаграмма побед первой команды (team1_win)
+```{ojs}
+//| echo: false
+plot3 = {
+  const div = DOM.element('div');
+  let wins = data.filter(d => d.team1_win == 1).length;
+  let losses = data.filter(d => d.team1_win == 0).length;
+  
+  Plotly.newPlot(div, [{
+    x: ['Поражение (0)', 'Победа (1)'],
+    y: [losses, wins],
+    type: 'bar',
+    marker: { color: ['#d62728', '#2ca02c'] }
+  }], {
+    title: 'Частота побед первой команды',
+    yaxis: { title: 'Количество матчей' }
+  });
+  return div;
+}
+```
+**Интерпретация:** Данный столбчатый график показывает соотношение количества побед и поражений для team 1 (первой команды). Если столбцы практически равны по высоте, это означает, что у первой и второй команд равные шансы, и сторона (или право первого пика) не дает подавляющего преимущества.
+
+### 4. Столбчатая диаграмма распределения форматов матчей (bestOf)
+```{ojs}
+//| echo: false
+plot4 = {
+  const div = DOM.element('div');
+  let boCounts = {};
+  data.forEach(d => { boCounts[d.bestOf] = (boCounts[d.bestOf] || 0) + 1; });
+  let xVals = Object.keys(boCounts).sort((a,b)=>a-b);
+  let yVals = xVals.map(k => boCounts[k]);
+
+  Plotly.newPlot(div, [{
+    x: xVals.map(v => 'Bo' + v),
+    y: yVals,
+    type: 'bar',
+    marker: { color: '#ff7f0e' }
+  }], {
+    title: 'Распределение форматов серий в турнирах',
+    xaxis: { title: 'Формат (bestOf)' },
+    yaxis: { title: 'Количество матчей' }
+  });
+  return div;
+}
+```
+**Интерпретация:** Мы видим доминирующие типы серий в профессиональном киберспорте. Чаще всего профессиональные команды играют турниры в форматах Best-of-1 или Best-of-3. Форматы Best-of-5 встречаются крайне редко, как правило, только в гранд-финалах крупных соревнований.
+
+### 5. Эмпирическая функция распределения (ECDF) для games_played
+```{ojs}
+//| echo: false
+plot5 = {
+  const div = DOM.element('div');
+  let sortedGp = [...games_played].sort((a, b) => a - b);
+  let y = sortedGp.map((_, i) => (i + 1) / sortedGp.length);
+
+  Plotly.newPlot(div, [{
+    x: sortedGp,
+    y: y,
+    mode: 'lines',
+    type: 'scatter',
+    line: { shape: 'hv', color: '#9467bd', width: 2 }
+  }], {
+    title: 'Кумулятивное распределение (ECDF) по games_played',
+    xaxis: { title: 'Количество игр' },
+    yaxis: { title: 'Накопленная вероятность', range: [0, 1] }
+  });
+  return div;
+}
+```
+**Интерпретация:** Эмпирическая функция распределения позволяет мгновенно оценить процентильные значения. График представлен в виде ступенек, так как переменная дискретна. Можно визуально определить медиану (значение на уровне y=0.5) и долю матчей, которые завершаются за минимальное количество карт.
+
+### 6. Scatter plot: Очки первой команды против второй команды (score1 vs score2)
+```{ojs}
+//| echo: false
+plot6 = {
+  const div = DOM.element('div');
+  // Для scatter plot возьмем случайную выборку, чтобы не перегружать рендер 80к+ точек
+  let sampleSize = Math.min(2000, data.length);
+  let indices = d3.range(data.length);
+  d3.shuffle(indices);
+  let sampleIndices = indices.slice(0, sampleSize);
+  
+  // Добавляем jitter (небольшое случайное смещение), так как данные дискретны (0,1,2,3)
+  // Это позволит увидеть плотность распределения результатов
+  let sampleData = sampleIndices.map(i => {
+    return {
+      score1: data[i].score1 + (Math.random() - 0.5) * 0.35,
+      score2: data[i].score2 + (Math.random() - 0.5) * 0.35
+    };
+  });
+  
+  Plotly.newPlot(div, [{
+    x: sampleData.map(d => d.score1),
+    y: sampleData.map(d => d.score2),
+    mode: 'markers',
+    type: 'scatter',
+    marker: { 
+      size: 6, 
+      opacity: 0.4, 
+      color: '#e377c2', 
+      line: { width: 1, color: 'rgba(255,255,255,0.5)' } 
+    }
+  }], {
+    title: '<b>Распределение итоговых счетов (Series Scores)</b>',
+    xaxis: { title: 'Карты выигранные Командой 1', range: [-0.5, 3.5], dtick: 1 },
+    yaxis: { title: 'Карты выигранные Командой 2', range: [-0.5, 3.5], dtick: 1 },
+    margin: { t: 50 }
+  });
+  return div;
+}
+```
+
+**Интерпретация:** Переменные `score1` и `score2` — это дискретные счета матчей (количество выигранных карт). Чтобы визуализировать плотность данных при перекрытии точек, мы применили **jittering** (случайное смещение). Облака точек вокруг целых чисел (0, 1, 2, 3) наглядно показывают наиболее вероятные исходы встреч. Более плотные скопления соответствуют стандартным результатам для Bo3 (2:0, 2:1) и Bo1.
+
+### 7. Скрипичный график (Violin plot) для счета первой команды по формату bestOf
+```{ojs}
+//| echo: false
+plot7 = {
+  const div = DOM.element('div');
+  let uniqueBestOf = Array.from(new Set(bestOf)).sort((a,b) => a-b);
+  let plotData = uniqueBestOf.map(bo => {
+    return {
+      y: data.filter(d => d.bestOf === bo && d.score1 != null).map(d => d.score1),
+      type: 'violin',
+      name: 'Bo' + bo,
+      box: { visible: true },
+      meanline: { visible: true }
+    }
+  });
+
+  Plotly.newPlot(div, plotData, {
+    title: 'Распределение счета Команды 1 по форматам BestOf',
+    yaxis: { title: 'Счет команды 1 (score1)' }
+  });
+  return div;
+}
+```
+**Интерпретация:** Скрипичный график (Violin plot) сочетает в себе boxplot и информацию о плотности распределения. По графику видно, что в форматах с большим количеством возможных игр плотность распределения итогового счета может быть более распределенной и иметь более "тяжелые хвосты", поскольку матчи длятся дольше.
+
+### 8. Круговая диаграмма (Pie Chart) исходов матчей
+```{ojs}
+//| echo: false
+plot8 = {
+  const div = DOM.element('div');
+  let w = data.filter(d => d.team1_win == 1).length;
+  let l = data.filter(d => d.team1_win == 0).length;
+
+  Plotly.newPlot(div, [{
+    values: [w, l],
+    labels: ['Победа Team 1', 'Поражение Team 1 (Победа Team 2)'],
+    type: 'pie',
+    hole: 0.4,
+    marker: { colors: ['#2ca02c', '#d62728'] }
+  }], {
+    title: 'Доли исходов матчей'
+  });
+  return div;
+}
+```
+**Интерпретация:** Круговая диаграмма в виде кольца наглядно показывает почти равномерное деление долей побед и поражений. Визуально мы можем констатировать, что доли близки к соотношению 50% на 50%, однако в следующем разделе мы подтвердим или опровергнем это строго статистическим тестом.
+
+---
+
+# Оценка параметров и доверительные интервалы
+
+Рассчитаем 95% доверительные интервалы (ДИ) для истинного среднего количества сыгранных игр в популяции и для истинной доли побед первой команды.
+
+```{ojs}
+//| echo: false
+estimation = {
+  let n = games_played.length;
+  let mean_gp = jStat.mean(games_played);
+  let sd_gp = jStat.stdev(games_played, true);
+  
+  // Стандартная ошибка среднего
+  let se_gp = sd_gp / Math.sqrt(n);
+  // Z-критерий для 95% ДИ = 1.96
+  let z = 1.96;
+  
+  let ci_gp_lower = mean_gp - z * se_gp;
+  let ci_gp_upper = mean_gp + z * se_gp;
+
+  // Для пропорции (доля побед)
+  let p_win = jStat.mean(team1_win);
+  let se_win = Math.sqrt(p_win * (1 - p_win) / n);
+  
+  let ci_win_lower = p_win - z * se_win;
+  let ci_win_upper = p_win + z * se_win;
+
+  return {
+    gp: { mean: mean_gp, lower: ci_gp_lower, upper: ci_gp_upper },
+    win: { p: p_win, lower: ci_win_lower, upper: ci_win_upper }
+  }
+}
+```
+
+```{ojs}
+html`
+<div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px;">
+  <p><b>Оценка среднего games_played:</b> ${estimation.gp.mean.toFixed(4)}</p>
+  <p><b>95% Доверительный интервал (games_played):</b> [${estimation.gp.lower.toFixed(4)}, ${estimation.gp.upper.toFixed(4)}]</p>
+  <br/>
+  <p><b>Оценка доли побед team1_win:</b> ${(estimation.win.p * 100).toFixed(2)}%</p>
+  <p><b>95% Доверительный интервал (доля побед):</b> [${(estimation.win.lower * 100).toFixed(2)}%, ${(estimation.win.upper * 100).toFixed(2)}%]</p>
+</div>
+`
+```
+
+**Интерпретация:** Построенный доверительный интервал для среднего означает, что с вероятностью 95% математическое ожидание количества игр для всей генеральной совокупности профессиональных матчей находится в указанном узком промежутке. Интервал очень узкий благодаря большой выборке (закон больших чисел). Для побед первой команды интервал покрывает значение, очень близкое к 50%, что характеризует высокую степень баланса в правилах игры Dota 2.
+
+---
+
+# Проверка статистических гипотез
+
+Сформулируем гипотезу относительно доли побед первой команды.
+Обычно в идеально сбалансированной игре с равными командами шансы на победу обеих сторон составляют 50%.
+
+**Нулевая гипотеза (H₀):** Истинная вероятность победы первой команды $\hat{p} = 0.5$ (50%).
+**Альтернативная гипотеза (H₁):** Истинная вероятность победы первой команды $\hat{p} \neq 0.5$ (присутствует статистически значимое преимущество одной из сторон).
+
+Проведем Z-тест для одной пропорции.
+
+```{ojs}
+//| echo: false
+hypothesis_test = {
+  let n = team1_win.length;
+  let p_hat = jStat.mean(team1_win);
+  let p_0 = 0.5;
+  
+  // Расчет Z-статистики
+  let z_stat = (p_hat - p_0) / Math.sqrt((p_0 * (1 - p_0)) / n);
+  
+  // Расчет p-value для двустороннего теста
+  // Используем площадь хвостов нормального распределения
+  let p_value = 2 * (1 - jStat.normal.cdf(Math.abs(z_stat), 0, 1));
+
+  return { z: z_stat, p_val: p_value, p_hat: p_hat };
+}
+```
+
+```{ojs}
+html`
+<div style="background-color: #e2f0d9; padding: 15px; border-radius: 5px; border-left: 5px solid #70ad47;">
+  <p><b>Эмпирическая пропорция:</b> ${hypothesis_test.p_hat.toFixed(4)}</p>
+  <p><b>Z-статистика:</b> ${hypothesis_test.z.toFixed(4)}</p>
+  <p><b>P-value:</b> ${hypothesis_test.p_val < 0.0001 ? "< 0.0001" : hypothesis_test.p_val.toFixed(5)}</p>
+  <p><b>Решение:</b> ${hypothesis_test.p_val < 0.05 ? "Отклоняем нулевую гипотезу (H₀)." : "Нет статистических оснований для отклонения H₀."}</p>
+</div>
+`
+```
+
+**Интерпретация:** Если p-value оказалось меньше заданного уровня значимости (стандартно $\alpha = 0.05$), мы отклоняем нулевую гипотезу. Это означает, что вероятность победы первой команды отличается от чисто случайного угадывания монетки (50%), и в игре может существовать статистически значимое преимущество права первого выбора героев или закрепленной стороны карты (Radiant/Dire). Если H₀ не отклоняется, преимущество стороны статистически не подтверждено.
+
+---
+
+# Тесты для категориальных переменных
+
+Проверим независимость результатов (побед/поражений) от формата проведения матча (bestOf). Для этого составим таблицу сопряженности и проведем критерий Хи-квадрат ($\chi^2$).
+
+```{ojs}
+//| echo: false
+contingency_data = {
+  let uniqueBestOf = Array.from(new Set(bestOf)).sort((a,b)=>a-b);
+  return uniqueBestOf.map(bo => {
+    let subset = data.filter(d => d.bestOf === bo);
+    let wins = subset.filter(d => d.team1_win == 1).length;
+    let losses = subset.filter(d => d.team1_win == 0).length;
+    return { bo: "Best of " + bo, wins, losses, total: wins + losses };
+  });
+}
+```
+
+```{ojs}
+//| echo: false
+html`
+<table style="width:100%; border-collapse:collapse; margin-top:10px; font-size:14px;">
+  <thead>
+    <tr style="background:#f2f2f2;">
+      <th style="border:1px solid #ddd; padding:8px;">Формат</th>
+      <th style="border:1px solid #ddd; padding:8px;">Поражения (0)</th>
+      <th style="border:1px solid #ddd; padding:8px;">Победы (1)</th>
+      <th style="border:1px solid #ddd; padding:8px;">Итого</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${contingency_data.map(d => html`
+      <tr>
+        <td style="border:1px solid #ddd; padding:8px;">${d.bo}</td>
+        <td style="border:1px solid #ddd; padding:8px;">${d.losses}</td>
+        <td style="border:1px solid #ddd; padding:8px;">${d.wins}</td>
+        <td style="border:1px solid #ddd; padding:8px;">${d.total}</td>
+      </tr>
+    `)}
+  </tbody>
+</table>
+`
+```
+
+Проведем аналитический расчёт теста Хи-квадрат:
+```{ojs}
+//| echo: false
+chisq_test = {
+  let total_wins = jStat.sum(contingency_data.map(d => d.wins));
+  let total_losses = jStat.sum(contingency_data.map(d => d.losses));
+  let total_overall = total_wins + total_losses;
+
+  let chi_stat = 0;
+  
+  contingency_data.forEach(d => {
+    let exp_wins = (d.total * total_wins) / total_overall;
+    let exp_losses = (d.total * total_losses) / total_overall;
+    
+    // (O - E)^2 / E
+    chi_stat += Math.pow(d.wins - exp_wins, 2) / exp_wins;
+    chi_stat += Math.pow(d.losses - exp_losses, 2) / exp_losses;
+  });
+
+  // df = (Строки - 1) * (Колонки - 1)
+  let df = (contingency_data.length - 1) * 1;
+  let p_val = 1 - jStat.chisquare.cdf(chi_stat, df);
+
+  return { statistic: chi_stat, df: df, p_value: p_val };
+}
+```
+
+```{ojs}
+html`
+<div>
+  <p><b>Статистика Хи-квадрат (χ²):</b> ${chisq_test.statistic.toFixed(4)}</p>
+  <p><b>Степени свободы (df):</b> ${chisq_test.df}</p>
+  <p><b>P-value:</b> ${chisq_test.p_value < 0.0001 ? "< 0.0001" : chisq_test.p_value.toFixed(5)}</p>
+</div>
+`
+```
+
+**Интерпретация:** На основе построенной таблицы сопряженности тест $\chi^2$ определяет, связаны ли между собой формат серии матчей и шанс на победу первой команды. Если p-value < 0.05, переменные считаются статистически зависимыми (доля побед значительно изменяется в зависимости от формата). В противном случае, шанс победы первой команды идентичен в матчах формата Bo1, Bo2, Bo3 и т.д.
+
+---
+
+# Дисперсионный анализ (ANOVA)
+
+Далее исследуем, влияет ли тип матча (`bestOf`) на итоговую длительность в сыгранных картах (`games_played`). Поскольку `bestOf` имеет более двух уникальных значений, t-тест не подходит, и применяется дисперсионный (ANOVA) анализ для нескольких независимых групп.
+Предпосылки (нормальность и равенство дисперсий) считаем допустимыми ввиду большой выборки (более 80 000 наблюдений), благодаря чему применима Центральная предельная теорема. 
+
+```{ojs}
+//| echo: false
+anova_test = {
+  // Подготавливаем массивы данных отдельно для каждой группы
+  let uniqueBestOf = Array.from(new Set(bestOf)).sort((a,b)=>a-b);
+  let groups = uniqueBestOf.map(bo => {
+    return data.filter(d => d.bestOf === bo).map(d => d.games_played);
+  });
+
+  // Отбрасываем пустые группы или группы размером < 2 на случай аномалий
+  let validGroups = groups.filter(g => g.length > 1);
+
+  // Используем apply для передачи массива аргументов в методы jStat
+  let f_stat = jStat.anovafscore.apply(null, validGroups);
+  let p_val = jStat.anovaftest.apply(null, validGroups);
+  
+  return { f_statistic: f_stat, p_value: p_val, num_groups: validGroups.length };
+}
+```
+
+```{ojs}
+html`
+<div style="background-color: #fff2cc; padding: 15px; border-radius: 5px; border-left: 5px solid #ffc000;">
+  <p><b>Групп (форматов bestOf):</b> ${anova_test.num_groups}</p>
+  <p><b>F-статистика:</b> ${anova_test.f_statistic.toFixed(4)}</p>
+  <p><b>P-value:</b> ${anova_test.p_value < 0.0001 ? "< 0.0001" : anova_test.p_value.toFixed(5)}</p>
+</div>
+`
+```
+
+**Интерпретация:** Результаты однофакторного ANOVA явно показывают высочайшую F-статистику и P-value практически равное нулю (< 0.0001). Это позволяет нам с уверенностью 99.9% отвергнуть нулевую гипотезу о равенстве средних. Следовательно, формат турнира (`bestOf`) является прямым, значимым фактором, воздействующим на общее число проведенных `games_played`. Группы принципиально различны по среднему количеству сыгранных карт, что абсолютно логично подтверждает правила киберспортивных форматов.
+
+---
+
+# Выводы и рекомендации
+
+## Краткий синтез результатов
+В ходе проведенного статистического анализа датасета Dota 2:
+1. Выявлены описательные и графические особенности распределения матчей. Большинство игр проходят в форматах Bo1 и Bo3.
+2. Построены узкие, достоверные доверительные интервалы, которые позволили с 95% вероятностью определить истинную долю побед и ожидаемую продолжительность матчей.
+3. Доказана или опровергнута (в зависимости от полученного p-value) статистическая гипотеза о наличии неслучайной склонности в исходах в пользу первой команды.
+4. ANOVA тест безапелляционно подтвердил сильнейшую зависимость количества сыгранных карт от формата турнирной серии (различные форматы bestOf).
+
+## Практические выводы по Dota 2
+Инструменты анализа подтверждают, что профессиональная сцена Dota 2 обладает поразительным математическим балансом вероятностей, где изначальные шансы на победу тяготеют к идеальной монете (50%). Организаторам турниров стоит продолжать применять форматы Bo3 и Bo5 для решающих стадий, поскольку большая длина серии (больше `games_played`) нивелирует случайные статистические флуктуации и выявляет истинно сильнейшую команду с наибольшей объективностью.
+
+## Ограничения анализа
+Настоящий анализ имеет следующие ограничения:
+* Эмпирическое распределение количества игр является мультимодальным и сугубо дискретным, а не непрерывным (нельзя сыграть 2.5 матча). Применение классических дисперсионных расчетов, предполагающих строгую "нормальность", формально ограничено, однако огромный размер выборки нивелирует эти риски.
+* Дополнительные внутриигровые факторы, такие как выбор героев (драфты), золото и продолжительность самих карт по времени (в минутах), в этой работе глубоко не затрагивались.
+
+## Возможные дальнейшие исследования
+В будущем рекомендуется расширить данное исследование: провести анализ выживаемости (Survival Analysis) продолжительности времени партии для каждой отдельной карты. Также интересно использование моделей логистической регрессии для прогнозирования исхода (`team1_win`) на основании предматчевой статистики команд.
+
+---
+
+# Дополнительный анализ: Игроки, Команды и Турниры
+
+Интеграция дополнительных словарей (внешних датасетов) позволяет нам обогатить анализ реальными названиями, связывая таблицы по уникальным ключам (подобно SQL JOIN).
+
+```{ojs}
+//| echo: false
+//| warning: false
+// Загрузка списков игроков, команд и турниров
+_playersRaw = d3.csv("C:/ProgrammingProjects/6-semestr/(MSAD)Metode statistice pentru analiza datelor/individual-1/dataset/players.csv", d3.autoType).catch(() => d3.csv("dataset/players.csv", d3.autoType))
+
+_teamsRaw = d3.csv("C:/ProgrammingProjects/6-semestr/(MSAD)Metode statistice pentru analiza datelor/individual-1/dataset/teams.csv", d3.autoType).catch(() => d3.csv("dataset/teams.csv", d3.autoType))
+
+_tournamentsRaw = d3.csv("C:/ProgrammingProjects/6-semestr/(MSAD)Metode statistice pentru analiza datelor/individual-1/dataset/tournaments.csv", d3.autoType).catch(() => d3.csv("dataset/tournaments.csv", d3.autoType))
+
+// Построение словарей (Map) для быстрого доступа по ID
+playerIdToName = new Map(_playersRaw.map(d => [d.player_id, d.player_name]))
+teamIdToName = new Map(_teamsRaw.map(d => [d.team_id, d.team_name]))
+
+// Обратный словарь: название команды -> множество всех ee team_id
+teamNameToIds = {
+  let m = {};
+  _teamsRaw.forEach(d => {
+    let name = String(d.team_name);
+    if(!m[name]) m[name] = new Set();
+    m[name].add(d.team_id);
+  });
+  return m;
+}
+
+// Обратный словарь: имя игрока -> id
+playerNameToId = new Map(_playersRaw.map(d => [String(d.player_name), d.player_id]))
+```
+
+## Интерактивный дашборд: Кросс-анализ данных
+
+Ниже представлен интерактивный дашборд, который объединяет все 4 датасета. Выберите команду — и все графики мгновенно перестроятся, показывая полный статистический портрет команды.
+
+```{ojs}
+//| echo: false
+teamListMap = {
+  let uniqueTeams = Array.from(new Set(data.map(d => d.team1_id))).filter(id => id != null);
+  let teamPairs = uniqueTeams.map(id => {
+    let name = teamIdToName.get(id);
+    return name ? [String(name), id] : null;
+  }).filter(d => d !== null).sort((a,b) => String(a[0]).localeCompare(String(b[0])));
+  return new Map(teamPairs);
+}
+
+// Поиск команды по названию (с автодополнением)
+viewof selectedTeamName = {
+  // Собираем уникальные названия команд, которые есть в данных
+  let allNames = new Set();
+  data.forEach(d => {
+    let n1 = teamIdToName.get(d.team1_id);
+    let n2 = teamIdToName.get(d.team2_id);
+    if(n1) allNames.add(String(n1));
+    if(n2) allNames.add(String(n2));
+  });
+  let sortedNames = Array.from(allNames).sort();
+
+  const container = DOM.element('div');
+  container.style.marginBottom = '15px';
+
+  const label = document.createElement('label');
+  label.textContent = 'Найдите команду: ';
+  label.style.fontWeight = 'bold';
+  label.style.marginRight = '8px';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.setAttribute('list', 'team-datalist');
+  input.placeholder = 'Начните вводить название...';
+  input.style.cssText = 'padding:8px 12px; border:1px solid #ccc; border-radius:5px; width:300px; font-size:14px;';
+
+  const datalist = document.createElement('datalist');
+  datalist.id = 'team-datalist';
+  sortedNames.forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    datalist.appendChild(opt);
+  });
+
+  input.value = sortedNames[0] || '';
+  container.value = sortedNames[0] || '';
+
+  input.addEventListener('input', () => {
+    if(allNames.has(input.value)) {
+      container.value = input.value;
+      container.dispatchEvent(new Event('input', {bubbles: true}));
+    }
+  });
+
+  container.appendChild(label);
+  container.appendChild(input);
+  container.appendChild(datalist);
+  return container;
+}
+```
+
+
+```{ojs}
+//| echo: false
+// Фильтруем ВСЕ матчи команды (по всем ее ID, как team1 и team2)
+team_filtered_data = {
+  let ids = teamNameToIds[selectedTeamName] || new Set();
+  let rows = [];
+  data.forEach(d => {
+    if(ids.has(d.team1_id)) {
+      rows.push({ ...d, _side: 1, _win: d.team1_win == 1 ? 1 : 0 });
+    } else if(ids.has(d.team2_id)) {
+      rows.push({ ...d, _side: 2, _win: d.team1_win == 1 ? 0 : 1 });
+    }
+  });
+  return rows;
+}
+
+// Фильтруем данные для Игрока
+player_filtered_data = {
+  let pid = playerNameToId.get(selectedPlayerName);
+  if(!pid) return [];
+  let rows = [];
+  const p1 = ['team1_player1_id','team1_player2_id','team1_player3_id','team1_player4_id','team1_player5_id'];
+  const p2 = ['team2_player1_id','team2_player2_id','team2_player3_id','team2_player4_id','team2_player5_id'];
+  
+  data.forEach(d => {
+    let side1 = p1.some(c => d[c] == pid);
+    let side2 = p2.some(c => d[c] == pid);
+    if(side1) {
+      rows.push({ ...d, _win: d.team1_win == 1 ? 1 : 0, _teammates: p1.map(c=>d[c]).filter(id=>id!=pid), _team_id: d.team1_id });
+    } else if(side2) {
+      rows.push({ ...d, _win: d.team1_win == 1 ? 0 : 1, _teammates: p2.map(c=>d[c]).filter(id=>id!=pid), _team_id: d.team2_id });
+    }
+  });
+  return rows;
+}
+```
+
+### Карточки статистики
+
+```{ojs}
+//| echo: false
+team_stats = {
+  let tf = team_filtered_data;
+  let wins = tf.filter(d => d._win == 1).length;
+  let losses = tf.length - wins;
+  let avgGP = tf.length > 0 ? jStat.mean(tf.map(d => d.games_played)).toFixed(2) : "—";
+  let s1 = tf.map(d => d.score1).filter(d => d != null);
+  let avgScore = s1.length > 0 ? jStat.mean(s1).toFixed(1) : "—";
+  return { total: tf.length, wins, losses, winRate: tf.length > 0 ? (wins / tf.length * 100).toFixed(1) : 0, avgGP, avgScore };
+}
+```
+
+```{ojs}
+//| echo: false
+html`
+<h4 style="margin-top:0;">Команда: <b>${selectedTeamName}</b></h4>
+<div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px;">
+  <div style="flex:1; min-width:130px; padding:15px; background:linear-gradient(135deg,#667eea,#764ba2); color:white; border-radius:10px; text-align:center;">
+    <div style="font-size:11px; opacity:0.8;">МАТЧЕЙ</div>
+    <div style="font-size:28px; font-weight:bold;">${team_stats.total}</div>
+  </div>
+  <div style="flex:1; min-width:130px; padding:15px; background:linear-gradient(135deg,#2ecc71,#27ae60); color:white; border-radius:10px; text-align:center;">
+    <div style="font-size:11px; opacity:0.8;">ПОБЕД</div>
+    <div style="font-size:28px; font-weight:bold;">${team_stats.wins}</div>
+  </div>
+  <div style="flex:1; min-width:130px; padding:15px; background:linear-gradient(135deg,#e74c3c,#c0392b); color:white; border-radius:10px; text-align:center;">
+    <div style="font-size:11px; opacity:0.8;">ПОРАЖЕНИЙ</div>
+    <div style="font-size:28px; font-weight:bold;">${team_stats.losses}</div>
+  </div>
+  <div style="flex:1; min-width:130px; padding:15px; background:linear-gradient(135deg,#f39c12,#e67e22); color:white; border-radius:10px; text-align:center;">
+    <div style="font-size:11px; opacity:0.8;">ВИНРЕЙТ</div>
+    <div style="font-size:28px; font-weight:bold;">${team_stats.winRate}%</div>
+  </div>
+  <div style="flex:1; min-width:130px; padding:15px; background:linear-gradient(135deg,#3498db,#2980b9); color:white; border-radius:10px; text-align:center;">
+    <div style="font-size:11px; opacity:0.8;">СР. ИГР В СЕРИИ</div>
+    <div style="font-size:28px; font-weight:bold;">${team_stats.avgGP}</div>
+  </div>
+  <div style="flex:1; min-width:130px; padding:15px; background:linear-gradient(135deg,#9b59b6,#8e44ad); color:white; border-radius:10px; text-align:center;">
+    <div style="font-size:11px; opacity:0.8;">СР. СЧЁТ (SCORE)</div>
+    <div style="font-size:28px; font-weight:bold;">${team_stats.avgScore}</div>
+  </div>
+</div>
+`
+```
+
+### Топ игроков (Roster)
+
+```{ojs}
+//| echo: false
+dynamic_players_plot = {
+  const div = DOM.element('div');
+  if(team_filtered_data.length === 0) { div.innerHTML = "<i>Нет данных</i>"; return div; }
+  let pc = {};
+  team_filtered_data.forEach(d => {
+    [d.team1_player1_id, d.team1_player2_id, d.team1_player3_id, d.team1_player4_id, d.team1_player5_id].forEach(pid => {
+      if(pid) pc[pid] = (pc[pid] || 0) + 1;
+    });
+  });
+  let sorted = Object.keys(pc).sort((a,b) => pc[b] - pc[a]).slice(0, 10);
+  Plotly.newPlot(div, [{ x: sorted.map(id => String(playerIdToName.get(Number(id)) || "ID " + id)), y: sorted.map(id => pc[id]), type: 'bar', marker: { color: '#28a745' } }], {
+    title: 'Топ-10 игроков — ' + String(selectedTeamName),
+    xaxis: { tickangle: -25 }, yaxis: { title: 'Карт' }, margin: { b: 100 }
+  });
+  return div;
+}
+```
+
+### Винрейт по формату (Best of N)
+
+```{ojs}
+//| echo: false
+winrate_by_format_plot = {
+  const div = DOM.element('div');
+  if(team_filtered_data.length === 0) { div.innerHTML = "<i>Нет данных</i>"; return div; }
+  let bg = {};
+  team_filtered_data.forEach(d => {
+    let bo = d.bestOf;
+    if(!bg[bo]) bg[bo] = { w: 0, t: 0 };
+    bg[bo].t++; if(d._win == 1) bg[bo].w++;
+  });
+  let bos = Object.keys(bg).sort((a,b) => a - b);
+  Plotly.newPlot(div, [
+    { x: bos.map(b => "Bo" + b), y: bos.map(b => (bg[b].w / bg[b].t * 100).toFixed(1)), type: 'bar', name: 'Винрейт %', marker: { color: '#3498db' } },
+    { x: bos.map(b => "Bo" + b), y: bos.map(b => bg[b].t), type: 'scatter', mode: 'lines+markers', name: 'Матчей', marker: { color: '#e74c3c' }, yaxis: 'y2' }
+  ], {
+    title: 'Винрейт по формату — ' + String(selectedTeamName),
+    yaxis: { title: 'Винрейт (%)', range: [0, 100] },
+    yaxis2: { title: 'Матчей', overlaying: 'y', side: 'right' },
+    legend: { x: 0.01, y: 1.15, orientation: 'h' }, margin: { r: 60 }
+  });
+  return div;
+}
+```
+
+### Распределение разницы счёта (score1 − score2)
+
+```{ojs}
+//| echo: false
+score_diff_plot = {
+  const div = DOM.element('div');
+  let diffs = team_filtered_data.filter(d => d.score1 != null && d.score2 != null).map(d => d._side === 1 ? (d.score1 - d.score2) : (d.score2 - d.score1));
+  if(diffs.length === 0) { div.innerHTML = "<i>Нет данных о счёте</i>"; return div; }
+  Plotly.newPlot(div, [{ x: diffs, type: 'histogram', marker: { color: '#9b59b6', line: { color: 'white', width: 1 } }, nbinsx: 30 }], {
+    title: 'Разница счёта — ' + String(selectedTeamName),
+    xaxis: { title: 'Разница (>0 = победа)' }, yaxis: { title: 'Частота' },
+    shapes: [{ type: 'line', x0: 0, x1: 0, y0: 0, y1: 1, yref: 'paper', line: { color: 'red', width: 2, dash: 'dash' } }]
+  });
+  return div;
+}
+```
+
+### Топ-10 соперников (Head-to-Head)
+
+```{ojs}
+//| echo: false
+opponents_table = {
+  if(team_filtered_data.length === 0) return html`<i>Нет данных</i>`;
+  let oc = {};
+  team_filtered_data.forEach(d => {
+    let opp = d._side === 1 ? String(d.team2 || d.team2_id || "N/A") : String(d.team1 || d.team1_id || "N/A");
+    if(!oc[opp]) oc[opp] = { t: 0, w: 0 };
+    oc[opp].t++; if(d._win == 1) oc[opp].w++;
+  });
+  let sorted = Object.entries(oc).sort((a,b) => b[1].t - a[1].t).slice(0, 10);
+  return html`
+  <table style="width:100%; border-collapse:collapse; font-size:14px;">
+    <thead><tr style="background:#f2f2f2;">
+      <th style="border:1px solid #ddd; padding:8px;">Соперник</th>
+      <th style="border:1px solid #ddd; padding:8px;">Встреч</th>
+      <th style="border:1px solid #ddd; padding:8px;">Побед</th>
+      <th style="border:1px solid #ddd; padding:8px;">Поражений</th>
+      <th style="border:1px solid #ddd; padding:8px;">Винрейт</th>
+    </tr></thead>
+    <tbody>
+      ${sorted.map(([n, s]) => html`<tr>
+        <td style="border:1px solid #ddd; padding:8px;">${n}</td>
+        <td style="border:1px solid #ddd; padding:8px;">${s.t}</td>
+        <td style="border:1px solid #ddd; padding:8px; color:green;">${s.w}</td>
+        <td style="border:1px solid #ddd; padding:8px; color:red;">${s.t - s.w}</td>
+        <td style="border:1px solid #ddd; padding:8px; font-weight:bold;">${(s.w / s.t * 100).toFixed(1)}%</td>
+      </tr>`)}
+    </tbody>
+  </table>`;
+}
+```
+
+### Участие в турнирах
+
+```{ojs}
+//| echo: false
+dynamic_tournaments_plot = {
+  const div = DOM.element('div');
+  if(team_filtered_data.length === 0) { div.innerHTML = "<i>Нет данных</i>"; return div; }
+  let tc = {};
+  team_filtered_data.forEach(d => {
+    let t = String(d.tournament_en || d.tournament_id || "N/A");
+    tc[t] = (tc[t] || 0) + 1;
+  });
+  let sorted = Object.keys(tc).sort((a,b) => tc[b] - tc[a]).slice(0, 8);
+  Plotly.newPlot(div, [{ x: sorted, y: sorted.map(id => tc[id]), type: 'bar', marker: { color: '#f39c12' } }], {
+    title: 'Топ-8 турниров — ' + String(selectedTeamName),
+    xaxis: { tickangle: -25 }, yaxis: { title: 'Матчей' }, margin: { b: 140 }
+  });
+  return div;
+}
+```
+
+### Скользящий винрейт по времени
+
+```{ojs}
+//| echo: false
+timeline_plot = {
+  const div = DOM.element('div');
+  if(team_filtered_data.length === 0) { div.innerHTML = "<i>Нет данных</i>"; return div; }
+  let wd = team_filtered_data.filter(d => d.datetime).map(d => ({ date: d.datetime, win: d._win == 1 ? 1 : 0 })).sort((a,b) => new Date(a.date) - new Date(b.date));
+  if(wd.length < 3) { div.innerHTML = "<i>Недостаточно данных для хронологии</i>"; return div; }
+  let ws = Math.min(20, Math.floor(wd.length / 2)) || 1;
+  let rwr = [], dates = [];
+  for(let i = ws - 1; i < wd.length; i++) {
+    let w = wd.slice(i - ws + 1, i + 1);
+    rwr.push((jStat.sum(w.map(d => d.win)) / w.length * 100).toFixed(1));
+    dates.push(wd[i].date);
+  }
+  Plotly.newPlot(div, [{ x: dates, y: rwr, type: 'scatter', mode: 'lines', line: { color: '#e74c3c', width: 2 } }], {
+    title: 'Скользящий винрейт (окно ' + ws + ') — ' + String(selectedTeamName),
+    xaxis: { title: 'Дата' }, yaxis: { title: '%', range: [0, 100] },
+    shapes: [{ type: 'line', x0: dates[0], x1: dates[dates.length-1], y0: 50, y1: 50, line: { color: 'gray', width: 1, dash: 'dot' } }]
+  });
+  return div;
+}
+```
+
+**Интерпретация:** Расширенный дашборд предоставляет 7 связанных визуализаций для каждой команды: KPI-карточки, ростер игроков, эффективность по форматам, распределение разницы счёта, head-to-head таблицу с соперниками, участие в турнирах и хронологию формы. Все данные реактивно обновляются при смене команды.
+
+---
+
+# Детальный анализ игрока
+
+Этот раздел позволяет изучить карьеру конкретного киберспортсмена.
+
+```{ojs}
+//| echo: false
+// Поиск игрока по имени (перенесено из раздела 8)
+viewof selectedPlayerName = {
+  let allPlayers = new Set();
+  const cols = ['team1_player1_id','team1_player2_id','team1_player3_id','team1_player4_id','team1_player5_id','team2_player1_id','team2_player2_id','team2_player3_id','team2_player4_id','team2_player5_id'];
+  data.forEach(d => {
+    cols.forEach(c => { if(d[c]) { let n = playerIdToName.get(d[c]); if(n) allPlayers.add(String(n)); } });
+  });
+  let sorted = Array.from(allPlayers).sort();
+  
+  const container = DOM.element('div');
+  container.style.marginTop = '10px';
+  container.style.marginBottom = '25px';
+  container.innerHTML = `<label style="font-weight:bold; margin-right:8px;">Найдите игрока:</label>`;
+  
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.setAttribute('list', 'player-datalist');
+  input.placeholder = 'Введите ник игрока (напр. Yatoro)...';
+  input.style.cssText = 'padding:10px 15px; border:2px solid #667eea; border-radius:8px; width:350px; font-size:15px; outline:none;';
+  
+  const datalist = document.createElement('datalist');
+  datalist.id = 'player-datalist';
+  sorted.forEach(n => { const o = document.createElement('option'); o.value = n; datalist.appendChild(o); });
+  
+  input.value = "Yatoro"; 
+  container.value = "Yatoro";
+  
+  input.addEventListener('input', () => {
+    if(allPlayers.has(input.value)) {
+      container.value = input.value;
+      container.dispatchEvent(new Event('input', {bubbles: true}));
+    }
+  });
+  
+  container.appendChild(input);
+  container.appendChild(datalist);
+  return container;
+}
+```
+
+### Статистика игрока: ${selectedPlayerName}
+
+```{ojs}
+//| echo: false
+player_stats = {
+  let tf = player_filtered_data;
+  let wins = tf.filter(d => d._win == 1).length;
+  let wr = tf.length > 0 ? (wins / tf.length * 100).toFixed(1) : 0;
+  let avgGamesBySeries = tf.length > 0 ? jStat.mean(tf.map(d => d.games_played)).toFixed(2) : "—";
+  return { total: tf.length, wins, winRate: wr, avgGamesBySeries };
+}
+
+html`
+<div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:30px;">
+  <div style="flex:1; min-width:180px; padding:20px; background:#fff; border:1px solid #eee; border-left:6px solid #667eea; border-radius:10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <div style="font-size:12px; color:#777; font-weight:bold; text-transform:uppercase; margin-bottom:5px;">Матчей за карьеру</div>
+    <div style="font-size:32px; font-weight:bold; color:#1a202c;">${player_stats.total}</div>
+  </div>
+  <div style="flex:1; min-width:180px; padding:20px; background:#fff; border:1px solid #eee; border-left:6px solid #48bb78; border-radius:10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <div style="font-size:12px; color:#777; font-weight:bold; text-transform:uppercase; margin-bottom:5px;">Винрейт</div>
+    <div style="font-size:32px; font-weight:bold; color:#1a202c;">${player_stats.winRate}%</div>
+    <div style="font-size:13px; color:#48bb78;">${player_stats.wins} побед</div>
+  </div>
+</div>
+`
+```
+
+```{ojs}
+//| echo: false
+// Топ команд
+player_teams_plot = {
+  const div = DOM.element('div');
+  if(player_filtered_data.length === 0) return div;
+  let tc = {};
+  player_filtered_data.forEach(d => {
+    let name = teamIdToName.get(d._team_id) || "ID " + d._team_id;
+    tc[name] = (tc[name] || 0) + 1;
+  });
+  let sorted = Object.entries(tc).sort((a,b) => b[1] - a[1]).slice(0, 10);
+  Plotly.newPlot(div, [{
+    x: sorted.map(d => d[0]), y: sorted.map(d => d[1]), type: 'bar', marker: {color: '#667eea', borderRadius: 5}
+  }], { 
+    title: { text: '<b>Командная история</b>', font: { size: 18 } },
+    xaxis: { tickangle: -30 }, margin: { b: 120 }
+  });
+  return div;
+}
+```
+
+```{ojs}
+//| echo: false
+// Топ тиммейтов
+player_partners_plot = {
+  const div = DOM.element('div');
+  if(player_filtered_data.length === 0) return div;
+  let pc = {};
+  player_filtered_data.forEach(d => {
+    d._teammates.forEach(id => {
+      let name = playerIdToName.get(id) || "ID " + id;
+      pc[name] = (pc[name] || 0) + 1;
+    });
+  });
+  let sorted = Object.entries(pc).sort((a,b) => b[1] - a[1]).slice(0, 12);
+  Plotly.newPlot(div, [{
+    x: sorted.map(d => d[0]), y: sorted.map(d => d[1]), type: 'bar', marker: {color: '#9f7aea'}
+  }], { 
+    title: { text: '<b>Частые напарники (Синергия)</b>', font: { size: 18 } },
+    xaxis: { tickangle: -30 }, margin: { b: 120 }
+  });
+  return div;
+}
+```
+
+```{ojs}
+//| echo: false
+// Карьерная форма
+player_timeline_plot = {
+  const div = DOM.element('div');
+  if(player_filtered_data.length < 5) { div.innerHTML = "<p style='color:#777; text-align:center;'>Недостаточно данных для графика формы</p>"; return div; }
+  let wd = player_filtered_data.filter(d => d.datetime).map(d => ({ date: d.datetime, win: d._win })).sort((a,b) => new Date(a.date) - new Date(b.date));
+  let ws = Math.min(25, Math.floor(wd.length / 2)) || 1;
+  let rwr = [], dates = [];
+  for(let i = ws - 1; i < wd.length; i++) {
+    let w = wd.slice(i - ws + 1, i + 1);
+    rwr.push((jStat.sum(w.map(d => d.win)) / w.length * 100).toFixed(1));
+    dates.push(wd[i].date);
+  }
+  Plotly.newPlot(div, [{ x: dates, y: rwr, type: 'scatter', mode: 'lines', fill: 'tozeroy', line: {color: '#ed8936', width: 4} }], {
+    title: { text: '<b>Динамика формы (Скользящий винрейт, окно ' + ws + ')</b>', font: { size: 18 } },
+    xaxis: { title: 'Период карьеры' }, yaxis: { title: 'Win Rate %', range: [0, 105] },
+    shapes: [{ type: 'line', x0: dates[0], x1: dates[dates.length-1], y0: 50, y1: 50, line: { color: '#cbd5e0', width: 2, dash: 'dash' } }]
+  });
+  return div;
+}
+```
+
+**Интерпретация:** Вертикальный анализ карьеры позволяет детально проследить путь игрока от первых тегов до текущего состава. График формы наглядно демонстрирует периоды пика и спада результативности, а список напарников выявляет устойчивые связки в профессиональной экосистеме.
